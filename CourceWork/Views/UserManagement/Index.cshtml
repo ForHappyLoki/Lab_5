@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Employee>
+@{
+    ViewBag.Title = "Сотрудники";
+}
+
+<div class="container">
+    <div class="search-bar text-center mb-4">
+        <form asp-action="Index" method="get">
+            <input type="text" name="searchTerm" id="searchInput" placeholder="Поиск сотрудника" class="form-control-1" />
+            <button id="searchButton" class="btn btn-primary">
+                Поиск
+            </button>
+            <button type="button" id="addButton" class="btn btn-success ms-2" onclick="location.href='@Url.Action("Creation", "UserManagement")';">
+                Создать
+            </button>
+        </form>
+    </div>
+
+    <div id="employeeList">
+        @if (Model == null || !Model.Any())
+        {
+            <p>Нет сотрудников для отображения.</p>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var employee in Model)
+                {
+                    <li id="employee-@employee.EmployeeId" class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@employee.FullName</strong> (Должность: @employee.Position, Логин: @employee.Login, Пароль: @employee.Password, Роль: @employee.Role)
+                        </div>
+                        <div>
+                            <form asp-action="Editing" method="post" style="display:inline;">
+                                <input type="hidden" name="EmployeeId" value="@employee.EmployeeId" />
+                                <input type="hidden" name="FullName" value="@employee.FullName" />
+                                <input type="hidden" name="HireDate" value="@employee.HireDate" />
+                                <input type="hidden" name="Position" value="@employee.Position" />
+                                <input type="hidden" name="Login" value="@employee.Login" />
+                                <input type="hidden" name="Password" value="@employee.Password" />
+                                <input type="hidden" name="Role" value="@employee.Role" />
+                                <button class="btn btn-warning btn-sm">
+                                    Редактировать
+                                </button>
+                            </form>
+
+                            <form asp-action="Delete" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="employeeId" value="@employee.EmployeeId" />
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+<script>
+    // При загрузке страницы
+    window.onload = function () {
+        // Получаем значение из localStorage
+        var searchTerm = sessionStorage.getItem('searchTerm');
+        if (searchTerm) {
+            // Устанавливаем значение в поле ввода
+            document.getElementById('searchInput').value = searchTerm;
+        }
+    };
+
+    // Сохраняем значение в localStorage при отправке формы
+    document.getElementById('searchButton').onclick = function () {
+        var searchTerm = document.getElementById('searchInput').value;
+        sessionStorage.setItem('searchTerm', searchTerm);
+    };
+</script>
+<script>
+    function confirmDelete(employeeId) {
+        const confirmed = confirm("Действительно хотите удалить этот аккаунт?");
+        if (confirmed) {
+            // Отправка асинхронного запроса на удаление
+            fetch(`/UserManagement/Delete/${employeeId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Успешное удаление - обновляем список или удаляем элемент из DOM
+                        document.getElementById(`employee-${employeeId}`).remove();
+                    } else {
+                        alert('Не удалось удалить сотрудника');
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+    }
+</script>

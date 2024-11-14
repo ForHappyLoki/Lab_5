@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Вход";
+}
+@model CourceWork.ViewModels.LoginModel
+
+<div class="text-center">
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Вход</h2>
+            <form method="post" asp-action="Login" asp-controller="Authentication" asp-anti-forgery="true">
+                <div class="form-group">
+                    <label asp-for="Login" for="login">Логин</label>
+                    <input asp-for="Login" type="text" id="login" required>
+                    <span asp-validation-for="Login" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" for="password">Пароль</label>
+                    <input asp-for="Password" type="password" id="password" required>
+                    <span asp-validation-for="Password" />
+                </div>
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+    </div>
+</div>

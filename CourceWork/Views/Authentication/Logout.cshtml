@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Вход";
+}
+@model CourceWork.ViewModels.LoginModel
+
+<div class="text-center">
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Выйти из аккаунта?</h2>
+            <form method="post" asp-action="LogoutAction" asp-controller="Authentication" asp-anti-forgery="true">
+                <button type="submit">Выйти</button>
+            </form>
+        </div>
+    </div>
+</div>
