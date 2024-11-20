@@ -1,8 +1,46 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@* @model YourNamespace.YourViewModel *@
+
+@{
+    ViewData["Title"] = "Телепередачи на неделю";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <label for="weekSelector">Выберите неделю:</label>
+@*     <select id="weekSelector" asp-for="SelectedWeek" asp-items="Model.Weeks">
+        <option value="">-- Выберите неделю --</option>
+        @foreach (var week in Model.Weeks)
+        {
+            <option value="@week.Value">@week.Text</option>
+        }
+    </select> *@
 </div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Понедельник</th>
+            <th>Вторник</th>
+            <th>Среда</th>
+            <th>Четверг</th>
+            <th>Пятница</th>
+            <th>Суббота</th>
+            <th>Воскресенье</th>
+        </tr>
+    </thead>
+    <tbody>
+@*         @for (int i = 0; i < Model.Schedule.Count; i++)
+        {
+            <tr>
+                <td>@Model.Schedule[i].Monday</td>
+                <td>@Model.Schedule[i].Tuesday</td>
+                <td>@Model.Schedule[i].Wednesday</td>
+                <td>@Model.Schedule[i].Thursday</td>
+                <td>@Model.Schedule[i].Friday</td>
+                <td>@Model.Schedule[i].Saturday</td>
+                <td>@Model.Schedule[i].Sunday</td>
+            </tr>
+        } *@
+    </tbody>
+</table>

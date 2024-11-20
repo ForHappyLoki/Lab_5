@@ -15,6 +15,8 @@ public partial class ScheduleTvshow
 
     public DateTime EndTime { get; set; }
 
+    public int? SequenceNumber { get; set; }
+
     public virtual Schedule Schedule { get; set; } = null!;
 
     public virtual Tvshow Show { get; set; } = null!;

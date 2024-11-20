@@ -1,8 +1,10 @@
 ﻿using CourceWork.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourceWork.Data
 {
+    [NotMapped]
     public static class StaticData
     {
         public static DatabaseContext StaticDB { get; set; }

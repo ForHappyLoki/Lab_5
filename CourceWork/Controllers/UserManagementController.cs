@@ -64,11 +64,13 @@ namespace CourceWork.Controllers
             }
             return RedirectToAction("Editing", model);
         }
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Creation(Employee model)
         {
             Employee employee = new Employee();
             return View(employee);
         }
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> CreationEditing(Employee model)
         {
             if (ModelState.IsValid)
