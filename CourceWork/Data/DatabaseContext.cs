@@ -116,12 +116,7 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("Schedule");
 
             entity.Property(e => e.ScheduleId).HasColumnName("schedule_id");
-            entity.Property(e => e.EndTime)
-                .HasColumnType("datetime")
-                .HasColumnName("end_time");
-            entity.Property(e => e.MonthNumber).HasColumnName("month_number");
-            entity.Property(e => e.WeekNumber).HasColumnName("week_number");
-            entity.Property(e => e.Year).HasColumnName("year");
+            entity.Property(e => e.Date).HasColumnName("date");
         });
 
         modelBuilder.Entity<ScheduleTvshow>(entity =>
@@ -131,14 +126,8 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("Schedule_TVShow");
 
             entity.Property(e => e.ScheduleTvshowId).HasColumnName("schedule_tvshow_id");
-            entity.Property(e => e.EndTime)
-                .HasColumnType("datetime")
-                .HasColumnName("end_time");
             entity.Property(e => e.ScheduleId).HasColumnName("schedule_id");
             entity.Property(e => e.ShowId).HasColumnName("show_id");
-            entity.Property(e => e.StartTime)
-                .HasColumnType("datetime")
-                .HasColumnName("start_time");
 
             entity.HasOne(d => d.Schedule).WithMany(p => p.ScheduleTvshows)
                 .HasForeignKey(d => d.ScheduleId)

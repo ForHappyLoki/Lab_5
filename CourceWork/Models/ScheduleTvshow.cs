@@ -11,10 +11,6 @@ public partial class ScheduleTvshow
 
     public int ShowId { get; set; }
 
-    public DateTime StartTime { get; set; }
-
-    public DateTime EndTime { get; set; }
-
     public int? SequenceNumber { get; set; }
 
     public virtual Schedule Schedule { get; set; } = null!;

@@ -1,0 +1,149 @@
+﻿@model CourceWork.ViewModels.DayModel
+@{
+    ViewData["Title"] = "Редактирование расписания";
+}
+
+<h1>Редактирование расписания</h1>
+
+<div class="day-table">
+<h2>@Model.schedules.Date.ToString()</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Номер</th>
+            <th>Время</th>
+            <th>Передача</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.scheduleTvshows != null && Model.scheduleTvshows.Count() > 0)
+        {
+            <form asp-action="EditShowToSchedule" method="post">
+                <input type="hidden" name="date" value="@Model.schedules.Date.ToString()" />
+                <table>
+                    @for (int j = 0; j < Model.scheduleTvshows.Count(); j++)
+                    {
+                        <input type="hidden" asp-for="scheduleTvshows[j].ScheduleTvshowId" />
+                        <tr>
+                            <td>
+                                <input asp-for="scheduleTvshows[j].SequenceNumber" class="small" required min="1"
+                                        onchange="updateSequenceNumbers(this, @j)" />
+                            </td>
+                            <td>@Model.showTime[j].scheduleTvshowsTime.ToString("HH:mm")</td>
+                            <td>@Model.showTime[j].showName</td>
+                            <td>
+                                <button type="button" class="btn btn-primary"
+                                        onclick="deleteShow(@Model.scheduleTvshows[j].ScheduleTvshowId)">
+                                    Удалить
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </form>
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">Нет передач на этот день</td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+
+<h2>Добавить новое шоу</h2>
+<form method="post" asp-action="AddShowToSchedule">
+    <input type="hidden" name="ScheduleId" value="@Model.schedules.ScheduleId" />
+    <input type="hidden" name="date" value="@Model.schedules.Date.ToString()" />
+
+    <div class="mb-3">
+        <label for="ShowId" class="form-label">Шоу</label>
+        <select id="ShowId" name="ShowId" class="form-select" required>
+            <option value="">Выберите шоу</option>
+            @foreach (var tvshow in Model.tvshows.tvshows)
+            {
+                <option value="@tvshow.ShowId">@tvshow.Title</option>
+            }
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label for="Order" class="form-label">Порядковый номер</label>
+        <input id="Order" name="Order" type="number" class="form-control" required min="1" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+
+
+<style>
+    .small {
+        width: 40px;
+    }
+
+    td {
+        padding: 10px
+    }
+</style>
+<script>
+    async function deleteShow(scheduleTvshowId) {
+        console.log(scheduleTvshowId); // Проверка переданного значения
+        // Подтверждение удаления
+        if (!confirm("Вы уверены, что хотите удалить эту передачу из расписания?")) {
+            return;
+        }
+        fetch(`/ScheduleManagement/DeleteShowToSchedule/${scheduleTvshowId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        });
+    }
+</script>
+<script>
+    function updateSequenceNumbers(input, index) {
+        const newValue = parseInt(input.value); // Новое введённое значение
+        const inputs = document.querySelectorAll('input[name^="scheduleTvshows["]'); // Все поля ввода
+
+        if (isNaN(newValue) || newValue < 1) {
+            alert("Введите корректное значение (минимум 1).");
+            input.value = ""; // Сброс значения
+            return;
+        }
+
+        // Массив текущих значений с их индексами
+        const values = Array.from(inputs).map((el, i) => ({
+            value: parseInt(el.value) || 0,
+            index: i
+        }));
+
+        // Проверяем, свободно ли новое значение
+        const isValueFree = !values.some(item => item.value === newValue && item.index !== index);
+
+        if (isValueFree) {
+            // Если значение свободно, просто устанавливаем его и выходим
+            input.value = newValue;
+            return;
+        }
+
+        // Если значение занято, начинаем сдвигать
+        let occupiedValue = newValue; // Текущее занятое значение
+        inputs.forEach((el, i) => {
+            const currentValue = parseInt(el.value) || 0;
+
+            // Сдвигаем только те значения, которые совпадают с текущим занятым
+            if (i !== index && currentValue === occupiedValue) {
+                occupiedValue++; // Увеличиваем занятое значение
+                el.value = occupiedValue; // Устанавливаем новое значение для текущего поля
+            }
+        });
+
+        // Устанавливаем новое значение для текущего поля
+        input.value = newValue;
+    }
+</script>

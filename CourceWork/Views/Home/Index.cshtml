@@ -1,46 +1,181 @@
-﻿@* @model YourNamespace.YourViewModel *@
+﻿@model CourceWork.ViewModels.ScheduleModel
 
 @{
     ViewData["Title"] = "Телепередачи на неделю";
 }
+@{
+    var userRole = User.IsInRole("moder") || User.IsInRole("admin"); // Проверяем роль пользователя
+    DateOnly dateOnly = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+    TimeOnly timeOnly = new TimeOnly(DateTime.Now.Hour, DateTime.Now.Minute);
+}
 
-<h1>@ViewData["Title"]</h1>
-
-<div>
-    <label for="weekSelector">Выберите неделю:</label>
-@*     <select id="weekSelector" asp-for="SelectedWeek" asp-items="Model.Weeks">
-        <option value="">-- Выберите неделю --</option>
-        @foreach (var week in Model.Weeks)
-        {
-            <option value="@week.Value">@week.Text</option>
+<form asp-action="Index" method="get">
+    <div class="day-heaser">
+        <h1>@ViewData["Title"]</h1>
+        <label for="date">Выберите дату:</label>
+        <input type="date" id="date" name="date" value="@Model.findDate.ToString("yyyy-MM-dd")" required />
+        <button type="submit">Отправить</button>
+    </div>
+</form> 
+<ttbody>
+@for (int i = 0; i < 7; i++)
+{
+        <div class="day-table">
+        @{
+            var shortDayName = Model.startDate.AddDays(i).ToString("ddd");
+            shortDayName = char.ToUpper(shortDayName[0]) + shortDayName.Substring(1);
         }
-    </select> *@
-</div>
+        <h2>@shortDayName, @Model.startDate.AddDays(i).ToString("dd MMMM")</h2>
+        <table class="@(Model.findDate == Model.startDate.AddDays(i) ? "highlight" : "normal")">
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Передача</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.scheduleTvshows[i] != null && Model.scheduleTvshows[i].Count > 0)
+                {
+                    for (int j = 0; j < Model.scheduleTvshows[i].Count; j++)
+                    {
+                        {
+                            bool isDateMatch = dateOnly == Model.schedules[i].Date;
+                            TimeOnly endTime = (j + 1 >= Model.scheduleTvshows[i].Count)
+                                ? Model.endTime
+                                : Model.showTime[i][j + 1].scheduleTvshowsTime;
 
-<table>
-    <thead>
-        <tr>
-            <th>Понедельник</th>
-            <th>Вторник</th>
-            <th>Среда</th>
-            <th>Четверг</th>
-            <th>Пятница</th>
-            <th>Суббота</th>
-            <th>Воскресенье</th>
-        </tr>
-    </thead>
-    <tbody>
-@*         @for (int i = 0; i < Model.Schedule.Count; i++)
+                            bool isHighlighted = isDateMatch && timeOnly >= Model.showTime[i][j].scheduleTvshowsTime && timeOnly < endTime;
+                        
+
+                        <tr class="@(isHighlighted ? "lowlight" : "")">
+                            <td>
+                                @Model.showTime[i][j].scheduleTvshowsTime.ToString("HH:mm") - @endTime.ToString("HH:mm")
+                            </td>
+                            <td>@Model.showTime[i][j].showName</td>
+                        </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">Нет передач на этот день</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (userRole) // Проверка роли пользователя
         {
-            <tr>
-                <td>@Model.Schedule[i].Monday</td>
-                <td>@Model.Schedule[i].Tuesday</td>
-                <td>@Model.Schedule[i].Wednesday</td>
-                <td>@Model.Schedule[i].Thursday</td>
-                <td>@Model.Schedule[i].Friday</td>
-                <td>@Model.Schedule[i].Saturday</td>
-                <td>@Model.Schedule[i].Sunday</td>
-            </tr>
-        } *@
-    </tbody>
-</table>
+            <form action="@Url.Action("Index", "ScheduleManagement")" method="post">
+                <input type="hidden" name="scheduleId" value="@Model.schedules[i]?.ScheduleId ?? 0" />
+                <input type="hidden" name="date" value="@Model.startDate.AddDays(i).ToString("yyyy-MM-dd")" />
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary text-center">Редактировать</button>
+                </div>
+            </form>
+        }
+    </div>
+}
+
+</ttbody>
+
+<style>
+    .button-container {
+        display: flex; 
+        justify-content: center; 
+        margin: 5px 0; 
+        margin-bottom: -5px;
+    }
+
+    .lowlight {
+        background-color: #ffc4d0;
+    }
+
+    .highlight {
+        background-color: #f7f0ff;
+    }
+    ttbody {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .day-table {
+        border: 1px solid #dddddd;
+        margin: 10px;
+        padding: 10px;
+        flex: 1 1 calc(14% - 20px);
+        min-width: 200px; 
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .normal {
+        background-color: #ffffff; /* Стандартный цвет фона */
+    }
+    .date-picker-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 150px;
+        text-align: center;
+    }
+
+    label {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        display: block;
+        color: #333;
+    }
+
+    .text-center {
+        text-align: center; 
+        justify-content: flex-end;
+    }
+
+    input[type="date"] {
+        width: 20%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1em;
+        margin-bottom: 15px;
+        transition: border-color 0.3s;
+    }
+
+    input[type="date"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .day-heaser {
+        margin-left: 40px;
+    }
+</style>

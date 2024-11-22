@@ -26,7 +26,7 @@ namespace CourceWork.Services
             int n = await db.SaveChangesAsync();
             if (n > 0)
             {
-                cache.Set(user.EmployeeId, user, new MemoryCacheEntryOptions
+                cache.Set($"user_{user.EmployeeId}", user, new MemoryCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
                 });

@@ -9,6 +9,7 @@ namespace CourceWork.Data
     {
         public static DatabaseContext StaticDB { get; set; }
         public static UserService StaticCacheUserService { get; set; }
+        public static ScheduleService StaticScheduleService { get; set; }
         public static List<SelectListItem> Roles { get; set; } = new List<SelectListItem>
         {
             new SelectListItem { Value = "user", Text = "Пользователь" },

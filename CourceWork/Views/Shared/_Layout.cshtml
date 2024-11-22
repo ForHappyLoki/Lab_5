@@ -43,6 +43,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Управление</a>
                             </li>
                         }
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Новое шоу</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

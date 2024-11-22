@@ -60,6 +60,7 @@ builderWebApplication.Services.AddMemoryCache();
 var scope = app.Services.CreateScope();
 var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 StaticData.StaticCacheUserService = new UserService(StaticData.StaticDB, memoryCache);
+StaticData.StaticScheduleService = new ScheduleService(StaticData.StaticDB, memoryCache);
 // Добавление логирования
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(); // Добавляем консольный провайдер
@@ -86,5 +87,4 @@ app.UseAuthorization();     // авторизация
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.Run();  
