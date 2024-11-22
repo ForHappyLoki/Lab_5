@@ -33,10 +33,7 @@
                             <td>@Model.showTime[j].scheduleTvshowsTime.ToString("HH:mm")</td>
                             <td>@Model.showTime[j].showName</td>
                             <td>
-                                <button type="button" class="btn btn-primary"
-                                        onclick="deleteShow(@Model.scheduleTvshows[j].ScheduleTvshowId)">
-                                    Удалить
-                                </button>
+                                <button type="button" class="btn btn-danger" onclick="deleteShow(@Model.scheduleTvshows[j].ScheduleTvshowId)">Удалить</button>
                             </td>
                         </tr>
                     }
@@ -54,7 +51,7 @@
 </table>
 </div>
 
-<h2>Добавить новое шоу</h2>
+<h2>Добавить шоу</h2>
 <form method="post" asp-action="AddShowToSchedule">
     <input type="hidden" name="ScheduleId" value="@Model.schedules.ScheduleId" />
     <input type="hidden" name="date" value="@Model.schedules.Date.ToString()" />
@@ -90,22 +87,17 @@
     }
 </style>
 <script>
-    async function deleteShow(scheduleTvshowId) {
-        console.log(scheduleTvshowId); // Проверка переданного значения
-        // Подтверждение удаления
-        if (!confirm("Вы уверены, что хотите удалить эту передачу из расписания?")) {
-            return;
+    function deleteShow(scheduleTvshowId) {
+        if (confirm("Вы уверены, что хотите удалить это шоу?")) {
+            $.post('@Url.Action("DeleteShowToSchedule")', { scheduleTvshowId: scheduleTvshowId })
+                .done(function () {
+                    location.reload(); // Обновляем страницу после успешного удаления
+                })
+                .fail(function () {
+                    alert("Ошибка при удалении шоу.");
+                });
         }
-        fetch(`/ScheduleManagement/DeleteShowToSchedule/${scheduleTvshowId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-            }
-        });
     }
-</script>
-<script>
     function updateSequenceNumbers(input, index) {
         const newValue = parseInt(input.value); // Новое введённое значение
         const inputs = document.querySelectorAll('input[name^="scheduleTvshows["]'); // Все поля ввода
