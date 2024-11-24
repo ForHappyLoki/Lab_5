@@ -1,10 +1,12 @@
 ﻿using CourceWork.Data;
 using CourceWork.Models;
 using CourceWork.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourceWork.Controllers
 {
+    [Authorize(Roles = "admin,moder")]
     public class ScheduleManagementController : Controller
     {
         private DatabaseContext _db;

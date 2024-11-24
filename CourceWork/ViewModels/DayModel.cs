@@ -9,8 +9,4 @@ namespace CourceWork.ViewModels
         public List<ScheduleTvshow> scheduleTvshows { get; set; } = new List<ScheduleTvshow>();
         public AllShowsModel tvshows { get; set; } = new AllShowsModel();
     }
-    public class AllShowsModel
-    {
-        public List<Tvshow> tvshows { get; set; } = new List<Tvshow>();
-    }
 }

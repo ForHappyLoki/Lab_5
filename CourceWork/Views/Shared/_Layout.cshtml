@@ -20,11 +20,23 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Расписание</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Политика приватности</a>
                         </li>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Управление</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin") || User.IsInRole("manager"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Новое шоу</a>
+                            </li>
+                        }
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -35,18 +47,6 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Authentication" asp-action="Logout">Выход</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("admin") || User.IsInRole("manager"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Управление</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Новое шоу</a>
                             </li>
                         }
                     </ul>

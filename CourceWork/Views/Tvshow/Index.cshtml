@@ -1,0 +1,102 @@
+﻿@model CourceWork.ViewModels.TvshowModel;
+@{
+    ViewData["Title"] = Model.tvshow.Title;
+}
+
+<body>
+    <div class="container-tv">
+        <h1>@Model.tvshow?.Title</h1>
+
+        <div>
+            <h3>Жанр: <span class="highlight">@Model.genre?.Name</span></h3>
+            <h3>Рейтинг: @Model.tvshow?.Rating</h3>
+            <h3>Длительность: @Model.tvshow?.Duration минут(ы)</h3>
+            <p>Описание: @Model.tvshow?.Description</p>
+        </div>
+
+        <h2>Сотрудники</h2>
+        <ul>
+            @foreach (var employee in Model.employee)
+            {
+                <li>
+                    <span class="highlight">@employee.FullName</span> (@employee.Position)
+                </li>
+            }
+        </ul>
+
+        <h2>Гости</h2>
+        <ul>
+            @foreach (var guest in Model.guest)
+            {
+                <li>
+                    <span class="highlight">@guest.FullName</span>
+                </li>
+            }
+        </ul>
+    </div>
+</body>
+
+<style>
+/*     body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+        color: #333;
+    } */
+
+    .container-tv {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+        color: #444;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.8em;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        color: #555;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+    }
+
+    h3 {
+        font-size: 1.3em;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        color: #555;
+    }
+
+    ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+
+    ul li {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .highlight {
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>

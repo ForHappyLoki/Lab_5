@@ -35,7 +35,6 @@ builderCookie.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSchem
         {
             options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Authentication/Login");
         });
-StaticData.StaticDB = new DatabaseContext(options);
 
 // Configure the HTTP request pipeline.
 var builderWebApplication = WebApplication.CreateBuilder(args);
@@ -55,16 +54,21 @@ builderWebApplication.Services.AddAuthentication(CookieAuthenticationDefaults.Au
         options.AccessDeniedPath = "/Authentication/AccessDenied";
     });
 
+
+
 var app = builderWebApplication.Build();
 builderWebApplication.Services.AddMemoryCache();
 var scope = app.Services.CreateScope();
 var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
+
+
+StaticData.StaticDB = new DatabaseContext(options);
 StaticData.StaticCacheUserService = new UserService(StaticData.StaticDB, memoryCache);
 StaticData.StaticScheduleService = new ScheduleService(StaticData.StaticDB, memoryCache);
+StaticData.TvshowServices = new TvshowServices(StaticData.StaticDB, memoryCache);
 // Добавление логирования
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(); // Добавляем консольный провайдер
-
 
 // Настройка middleware
 if (app.Environment.IsDevelopment())

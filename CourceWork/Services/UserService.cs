@@ -73,7 +73,7 @@ namespace CourceWork.Services
         public async Task<IEnumerable<Employee>> GetUser(string name)
         {
             // Попытка получить сотрудников по префиксу из кэша
-            if (cache.TryGetValue($"fullName_{name}", out IEnumerable<Employee> users))
+            if (!cache.TryGetValue($"fullName_{name}", out IEnumerable<Employee> users))
             {
                 return SortUsers(users);
             }
@@ -105,7 +105,7 @@ namespace CourceWork.Services
 
             for (int i = 1; i <= await db.Employees.CountAsync(); i++)
             {
-                if (cache.TryGetValue($"user_{i}", out Employee employee))
+                if (!cache.TryGetValue($"user_{i}", out Employee employee))
                 {
                     allEmployees.Add(employee);
                 }

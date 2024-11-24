@@ -51,7 +51,11 @@
                             <td>
                                 @Model.showTime[i][j].scheduleTvshowsTime.ToString("HH:mm") - @endTime.ToString("HH:mm")
                             </td>
-                            <td>@Model.showTime[i][j].showName</td>
+                            <td>
+                                <a href="@Url.Action("Index", "Tvshow", new { tvshowId = Model.showTime[i][j].showId })">
+                                    @Model.showTime[i][j].showName
+                                </a>
+                            </td>
                         </tr>
                         }
                     }

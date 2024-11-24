@@ -1,0 +1,148 @@
+﻿@using CourceWork.Data
+@model CourceWork.ViewModels.TvshowModel
+@{
+    ViewData["Title"] = "Создание передачи";
+}
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ShowCreation" method="post">
+    <!-- Название телепередачи -->
+    <div class="form-group">
+        <label asp-for="tvshow.Title">Название телепередачи</label>
+        <input asp-for="tvshow.Title" class="form-control" />
+        <span asp-validation-for="tvshow.Title" class="text-danger"></span>
+    </div>
+
+    <!-- Описание телепередачи -->
+    <div class="form-group">
+        <label asp-for="tvshow.Description">Описание шоу</label>
+        <input asp-for="tvshow.Description" class="form-control" type="text" />
+        <span asp-validation-for="tvshow.Description" class="text-danger"></span>
+    </div>
+
+    <!-- Длительность -->
+    <div class="form-group">
+        <label asp-for="tvshow.Duration">Длительность</label>
+        <input asp-for="tvshow.Duration" class="form-control" />
+        <span asp-validation-for="tvshow.Duration" class="text-danger"></span>
+    </div>
+
+    <!-- Рейтинг -->
+    <div class="form-group">
+        <label asp-for="tvshow.Rating">Рейтинг</label>
+        <input asp-for="tvshow.Rating" class="form-control" type="number" min="0" max="10" step="0.01" required />
+        <span asp-validation-for="tvshow.Rating" class="text-danger"></span>
+    </div>
+
+    <!-- Жанр -->
+    <div class="form-group">
+        <label asp-for="GenreId">Жанр</label>
+        <select asp-for="GenreId" id="GenreId" name="GenreId" class="form-select" required>
+            <option value="">Выберите жанр</option>
+            @foreach (var genre in StaticData.allGenresModel.genres)
+            {
+                <option value="@genre.GenreId">
+                    @genre.Name
+                </option>
+            }
+        </select>
+        <span asp-validation-for="GenreId" class="text-danger"></span>
+    </div>
+
+    <!-- Сотрудники -->
+    @if (Model.employee.Count > 0)
+    {
+        <div class="form-group">
+            <h3>Сотрудники</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Имя сотрудника</th>
+                        <th>Должность</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in Model.employee)
+                    {
+                        <tr>
+                            <td>@employee.FullName</td>
+                            <td>@employee.Position</td>
+                            <td>
+                                <input asp-for="SelectedEmployeeId" type="hidden" name="date" value="@employee.EmployeeId" />
+                                <button type="submit" name="action" value="DeleteEmployee" class="btn btn-danger">Удалить</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="form-group">
+        <label asp-for="employee">Добавить сотрудника</label>
+        <select asp-for="SelectedEmployeeId" id="SelectedEmployeeId" name="SelectedEmployeeId" class="form-select">
+            <option value="">Выберите сотрудника</option>
+            @foreach (var employee in StaticData.allEmployeesModel.employee)
+            {
+                <option value="@employee.EmployeeId">@employee.FullName - @employee.Position</option>
+            }
+        </select>
+        <span asp-validation-for="SelectedEmployeeId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" name="action" value="AddEmployee" class="btn btn-primary">Добавить сотрудника</button>
+
+    <!-- Гости -->
+    @if (Model.guest.Count > 0)
+    {
+        <div class="form-group">
+            <h3>Гости</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Имя гостя</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var guest in Model.guest)
+                    {
+                        <tr>
+                            <td>@guest.FullName</td>
+                            <td>
+                                <input asp-for="SelectedGuestId" type="hidden" name="date" value="@guest.GuestId" />
+                                <button type="submit" name="action" value="DeleteGuest" class="btn btn-danger">Удалить</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="form-group">
+        <label asp-for="guest">Добавить гостя</label>
+        <select asp-for="SelectedGuestId" id="SelectedGuestId" name="SelectedGuestId" class="form-select">
+            <option value="">Выберите гостя</option>
+            @foreach (var guest in StaticData.allGuestsModel.guests)
+            {
+                <option value="@guest.GuestId">@guest.FullName</option>
+            }
+        </select>
+        <span asp-validation-for="guest" class="text-danger"></span>
+    </div>
+
+    <button type="submit" name="action" value="AddGuest" class="btn btn-primary">Добавить гостя</button>
+
+    <!-- Финальное сохранение -->
+    <br />
+    <br />
+    <button type="submit" name="action" value="Save" class="btn btn-success">Сохранить</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

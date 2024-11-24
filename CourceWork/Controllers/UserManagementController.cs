@@ -20,7 +20,6 @@ namespace CourceWork.Controllers
             _db = StaticData.StaticDB;
             _userService = StaticData.StaticCacheUserService;
         }
-        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Index(string searchTerm)
         {
             ViewBag.ShowNotification = "true";
@@ -37,7 +36,6 @@ namespace CourceWork.Controllers
 
             return View(model);
         }
-        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int employeeId)
@@ -45,13 +43,11 @@ namespace CourceWork.Controllers
             await _userService.Delete(employeeId);
             return RedirectToAction("Index");
         }
-        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult> Editing(Employee model)
         {
             return View(model);
         }
-        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult> ValidationEditing(Employee model)
         {
@@ -64,13 +60,11 @@ namespace CourceWork.Controllers
             }
             return RedirectToAction("Editing", model);
         }
-        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Creation(Employee model)
         {
             Employee employee = new Employee();
             return View(employee);
         }
-        [Authorize(Roles = "admin")]
         public async Task<ActionResult> CreationEditing(Employee model)
         {
             if (ModelState.IsValid)

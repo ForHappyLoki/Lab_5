@@ -32,8 +32,16 @@ namespace CourceWork.Services
             DayOfWeek firstDayOfWeekRule = DayOfWeek.Monday; // Начало недели с понедельника
 
             DateTime startOfWeek = new DateTime(date.Year, date.Month, date.Day);
-            int dayOfWeek = (int)startOfWeek.DayOfWeek; // 0 = Воскресенье, ..., 6 = Суббота
-            DateTime firstDayOfWeek = startOfWeek.AddDays(-dayOfWeek + 1); // Понедельник
+            int dayOfWeek = (int)startOfWeek.DayOfWeek;
+
+            // Если день недели воскресенье (0), считаем его как 7
+            if (dayOfWeek == 0)
+            {
+                dayOfWeek = 7;
+            }
+
+            // Теперь вычитаем (dayOfWeek - 1), чтобы получить понедельник
+            DateTime firstDayOfWeek = startOfWeek.AddDays(-dayOfWeek + 1);
 
             int dayKey = calendar.GetWeekOfYear(startOfWeek, rule, firstDayOfWeekRule);
             if (!cache.TryGetValue($"{date.Year}_{dayKey}", out scheduleModel))

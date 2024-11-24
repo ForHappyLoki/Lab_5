@@ -1,16 +1,19 @@
-﻿@* @model IEnumerable<Tvshow>
+﻿@model List<CourceWork.ViewModels.TvshowModel>
 @{
     ViewBag.Title = "Телепередачи";
+    var searchTerm = ViewData["SearchTerm"];
 }
 
 <div class="container">
     <div class="search-bar text-center mb-4">
         <form asp-action="Index" method="get">
-            <input type="text" name="searchTerm" id="searchInput" placeholder="Поиск сотрудника" class="form-control-1" />
+            <input type="text" name="searchTerm" id="searchInput" placeholder="@(string.IsNullOrEmpty((string)searchTerm) ? "Введите название шоу" : searchTerm)" class="form-control-1" />
             <button id="searchButton" class="btn btn-primary">
                 Поиск
             </button>
-            <button type="button" id="addButton" class="btn btn-success ms-2" onclick="location.href='@Url.Action("Creation", "UserManagement")';">
+        </form>
+        <form asp-action="ShowCreation" method="post">
+            <button type="submit" id="addButton" class="btn btn-success ms-2">
                 Создать
             </button>
         </form>
@@ -19,34 +22,55 @@
     <div id="employeeList">
         @if (Model == null || !Model.Any())
         {
-            <p>Нет сотрудников для отображения.</p>
+            <p>Нет передач для отображения.</p>
         }
         else
         {
             <ul class="list-group">
-                @foreach (var employee in Model)
+                @foreach (var tvshow in Model)
                 {
-                    <li id="employee-@employee.EmployeeId" class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>@employee.FullName</strong> (Должность: @employee.Position, Логин: @employee.Login, Пароль: @employee.Password, Роль: @employee.Role)
+                    <li id="employee-@tvshow.tvshow.ShowId" class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="max-wigth">
+                            <strong>@tvshow.tvshow.Title </strong> (Жанр: @tvshow.genre.Name,
+                            Длительность: @tvshow.tvshow.Duration,
+                            Рейтинг: @tvshow.tvshow.Rating,
+                            Сотрудники:
+                            @if (tvshow.employee.Count > 0)
+                            {
+                                @foreach (var employee in tvshow.employee)
+                                {
+                                    <strong>@employee.FullName, </strong>
+                                }
+                            }
+                            else
+                            {
+                                <strong>Нет сотрудников </strong>
+                            }
+                            Гости:
+                            @if (tvshow.guest.Count > 0)
+                            {
+                                @foreach (var guest in tvshow.guest)
+                                {
+                                    <strong>@guest.FullName, </strong>
+                                }
+                            }
+                            else
+                            {
+                                <strong>Нет гостей </strong>
+                            }
+                            )
                         </div>
                         <div>
-                            <form asp-action="Editing" method="post" style="display:inline;">
-                                <input type="hidden" name="EmployeeId" value="@employee.EmployeeId" />
-                                <input type="hidden" name="FullName" value="@employee.FullName" />
-                                <input type="hidden" name="HireDate" value="@employee.HireDate" />
-                                <input type="hidden" name="Position" value="@employee.Position" />
-                                <input type="hidden" name="Login" value="@employee.Login" />
-                                <input type="hidden" name="Password" value="@employee.Password" />
-                                <input type="hidden" name="Role" value="@employee.Role" />
-                                <button class="btn btn-warning btn-sm">
+                            <form asp-action="ShowCreation" method="post" style="display:inline;">
+                                <input type="hidden" name="modelId" value="@tvshow.tvshow.ShowId" />
+                                <button type="submit" class="btn btn-warning btn-sm">
                                     Редактировать
                                 </button>
                             </form>
-
-                            <form asp-action="Delete" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="employeeId" value="@employee.EmployeeId" />
+                            <form asp-action="ShowDelete" method="post" style="display:inline;" 
+                            onsubmit="return confirm('Вы действительно хотите удалить это шоу? Оно будет удалено из расписания, 
+                            все назначенные сотрудники и гости потеряют с ним связь');">
+                                <input type="hidden" name="showId" value="@tvshow.tvshow.ShowId" />
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     Удалить
                                 </button>
@@ -58,6 +82,11 @@
         }
     </div>
 </div>
+<style>
+    .max-wigth {
+        max-width: 80%;
+    }
+</style>
 <script>
     // При загрузке страницы
     window.onload = function () {
@@ -75,27 +104,3 @@
         sessionStorage.setItem('searchTerm', searchTerm);
     };
 </script>
-<script>
-    // function confirmDelete(employeeId) {
-    //     const confirmed = confirm("Действительно хотите удалить эту телепередачу?");
-    //     if (confirmed) {
-    //         // Отправка асинхронного запроса на удаление
-    //         fetch(`/UserManagement/Delete/${employeeId}`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-    //             }
-    //         })
-    //             .then(response => {
-    //                 if (response.ok) {
-    //                     // Успешное удаление - обновляем список или удаляем элемент из DOM
-    //                     document.getElementById(`employee-${employeeId}`).remove();
-    //                 } else {
-    //                     alert('Не удалось удалить сотрудника');
-    //                 }
-    //             })
-    //             .catch(error => console.error('Ошибка:', error));
-    //     }
-    // }
-</script> *@
