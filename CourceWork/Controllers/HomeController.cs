@@ -10,14 +10,14 @@ namespace CourceWork.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private DatabaseContext _db;
-        private ScheduleService scheduleService;
+        private readonly DatabaseContext _db;
+        private readonly ScheduleService scheduleService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DatabaseContext databaseContext, ScheduleService scheduleServices)
         {
             _logger = logger;
-            _db = StaticData.StaticDB;
-            scheduleService = StaticData.StaticScheduleService;
+            _db = databaseContext;
+            scheduleService = scheduleServices;
         }
 
         public async Task<IActionResult> Index(DateOnly? date = null)

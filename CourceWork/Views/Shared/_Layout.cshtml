@@ -28,13 +28,16 @@
                         @if (User.IsInRole("admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Управление</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Сотрудники</a>
                             </li>
                         }
                         @if (User.IsInRole("admin") || User.IsInRole("manager"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Новое шоу</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Guests" asp-action="Index">Гости</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Телепередачи</a>
                             </li>
                         }
                         @if (!User.Identity.IsAuthenticated)

@@ -13,12 +13,12 @@ namespace CourceWork.Controllers
     [Authorize(Roles = "admin")]
     public class UserManagementController : Controller
     {
-        private DatabaseContext _db;
-        private UserService _userService;
-        public UserManagementController()
+        private readonly DatabaseContext _db;
+        private readonly UserService _userService;
+        public UserManagementController(DatabaseContext databaseContext, UserService userService)
         {
-            _db = StaticData.StaticDB;
-            _userService = StaticData.StaticCacheUserService;
+            _db = databaseContext;
+            _userService = userService;
         }
         public async Task<ActionResult> Index(string searchTerm)
         {

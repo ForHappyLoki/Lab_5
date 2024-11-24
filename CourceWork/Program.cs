@@ -1,76 +1,45 @@
 using CourceWork.Data;
 using CourceWork.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using static System.Formats.Asn1.AsnWriter;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// --- Конфигурация базы данных ---
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddDbContext<DatabaseContext>(options =>
+    options.UseSqlServer(connectionString));
 
-var builderDB = new ConfigurationBuilder();
-builderDB.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", ".."));
-builderDB.AddJsonFile("appsettings.json");
-var config = builderDB.Build();
-string? connectionString = config.GetConnectionString("DefaultConnection");
+// --- Регистрация сервисов ---
+builder.Services.AddScoped<ScheduleService>();
+builder.Services.AddScoped<TvshowServices>();
+builder.Services.AddScoped<GuestsService>();
+builder.Services.AddScoped<UserService>();
 
-var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-var options = optionsBuilder
-    .UseSqlServer(connectionString)
-    .Options;
+// --- Регистрация кэша ---
+builder.Services.AddMemoryCache();
 
-// установка конфигурации подключенияIServiceCollection
-var builderCookie = new ServiceCollection();
-
-// Добавление аутентификации
-builderCookie.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie(options => //CookieAuthenticationOptions
-        {
-            options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Authentication/Login");
-        });
-
-// Configure the HTTP request pipeline.
-var builderWebApplication = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builderWebApplication.Services.AddControllersWithViews();
-
-// Configure database context
-builderWebApplication.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseSqlServer(builderWebApplication.Configuration.GetConnectionString("DefaultConnection")));
-
-// Add authentication
-builderWebApplication.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+// --- Настройка аутентификации ---
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = new PathString("/Authentication/Login");
+        options.LoginPath = "/Authentication/Login";
         options.AccessDeniedPath = "/Authentication/AccessDenied";
     });
 
+// --- Регистрация контроллеров и представлений ---
+builder.Services.AddControllersWithViews();
 
-
-var app = builderWebApplication.Build();
-builderWebApplication.Services.AddMemoryCache();
-var scope = app.Services.CreateScope();
-var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
-
-
-StaticData.StaticDB = new DatabaseContext(options);
-StaticData.StaticCacheUserService = new UserService(StaticData.StaticDB, memoryCache);
-StaticData.StaticScheduleService = new ScheduleService(StaticData.StaticDB, memoryCache);
-StaticData.TvshowServices = new TvshowServices(StaticData.StaticDB, memoryCache);
-// Добавление логирования
+// --- Настройка логирования ---
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(); // Добавляем консольный провайдер
 
-// Настройка middleware
+var app = builder.Build();
+
+// --- Настройка middleware ---
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage(); // Страница ошибок в разработке
@@ -80,15 +49,17 @@ else
     app.UseExceptionHandler("/Home/Error"); // Страница ошибок для продакшена
     app.UseHsts();
 }
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-app.UseAuthentication();    // аутентификация
-app.UseAuthorization();     // авторизация
+app.UseAuthentication();    // Аутентификация
+app.UseAuthorization();     // Авторизация
 
+// --- Настройка маршрутов ---
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.Run();  
+
+app.Run();

@@ -9,12 +9,12 @@ namespace CourceWork.Controllers
     [Authorize(Roles = "admin,moder")]
     public class ScheduleManagementController : Controller
     {
-        private DatabaseContext _db;
-        private ScheduleService scheduleService;
-        public ScheduleManagementController()
+        private readonly DatabaseContext _db;
+        private readonly ScheduleService scheduleService;
+        public ScheduleManagementController(DatabaseContext databaseContext, ScheduleService scheduleServices)
         {
-            _db = StaticData.StaticDB;
-            scheduleService = StaticData.StaticScheduleService;
+            _db = databaseContext;
+            scheduleService = scheduleServices;
         }
         public async Task<IActionResult> Index(DateTime date)
         {

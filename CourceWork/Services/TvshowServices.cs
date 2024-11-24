@@ -184,14 +184,13 @@ namespace CourceWork.Services
             }
             if (tvshow == null)
             {
-                CreateShow(model);
+                await CreateShow(model);
             }
             else
             {
-                UpdateShow(model, tvshow);
+                await UpdateShow(model, tvshow);
             }
             cache.Remove($"TvshowModel");
-            List<TvshowModel> tvshowModels;
         }
         public async Task CreateShow(TvshowModel model)
         {
@@ -235,8 +234,10 @@ namespace CourceWork.Services
             tvshow.Description = model.tvshow.Description;
             tvshow.Rating = model.tvshow.Rating;
             tvshow.Duration = model.tvshow.Duration;
-            tvshow.GenreId = model.tvshow.GenreId;
+            tvshow.GenreId = model.GenreId;
             db.Tvshows.Update(tvshow);
+
+            await db.SaveChangesAsync();
 
             var employeeTvshow = db.TvshowEmployees.Where(e => e.ShowId == tvshow.ShowId).ToList();
             var employeeIdsInModel = model.employee.Select(e => e.EmployeeId).ToList();
@@ -268,17 +269,21 @@ namespace CourceWork.Services
             var guestInModel = guestTvshow.Where(g => guestIdsInModel.Contains(g.GuestId));
             var guestIds = guestInModel.Select(g => g.GuestId).ToList();
             var guestIns = model.guest.Where(g => !employeeIds.Contains(g.GuestId)).ToList();
-            foreach(Guest guest in guestIns)
+            foreach (Guest guest in guestIns)
             {
-                TvshowGuest tvshowGuest = new TvshowGuest()
-                {
-                    GuestId = guest.GuestId,
-                    ShowId = tvshow.ShowId,
-                };
-                db.TvshowGuests.Add(tvshowGuest);
-            }
+                // Проверка на существование записи в таблице TvshowGuests
+                bool exists = await db.TvshowGuests.AnyAsync(tg => tg.GuestId == guest.GuestId && tg.ShowId == tvshow.ShowId);
 
-            await db.SaveChangesAsync();
+                if (!exists)
+                {
+                    TvshowGuest tvshowGuest = new TvshowGuest()
+                    {
+                        GuestId = guest.GuestId,
+                        ShowId = tvshow.ShowId,
+                    };
+                    db.TvshowGuests.Add(tvshowGuest);
+                }
+            }
         }
         public async Task DeleteShow(int showId)
         {
@@ -287,16 +292,87 @@ namespace CourceWork.Services
             {
                 var tvshowEmployee = db.TvshowEmployees.Where(t => t.ShowId == showId);
                 var tvshowGuest = db.TvshowGuests.Where(t => t.ShowId == showId);
-                var scheduleTvshow = db.ScheduleTvshows.Where(t => t.ShowId == showId);// Удаляем все записи
+                var scheduleTvshow = db.ScheduleTvshows.Where(t => t.ShowId == showId);
                 cache.Remove($"TvshowModel");
                 db.TvshowEmployees.RemoveRange(tvshowEmployee);
                 db.TvshowGuests.RemoveRange(tvshowGuest);
                 db.ScheduleTvshows.RemoveRange(scheduleTvshow);
                 db.Tvshows.Remove(show);
 
-                // Сохраняем изменения в базе данных
                 await db.SaveChangesAsync();
             }
+        }
+        private TvshowModel? tvshowModel1Cache;
+
+        public TvshowModel CacheTvshowModelResave()
+        {
+            if (!cache.TryGetValue("TvshowModel1Cache", out tvshowModel1Cache))
+            {
+                tvshowModel1Cache = new TvshowModel();
+                SetCache(tvshowModel1Cache, TimeSpan.FromHours(5));
+            }
+            return tvshowModel1Cache;
+        }
+        public void AddObject<T>(T obj)
+        {
+            tvshowModel1Cache = CacheTvshowModelResave();
+            switch (obj)
+            {
+                case Employee employee:
+                    tvshowModel1Cache.employee.Add(employee);
+                    break;
+                case Guest guest:
+                    tvshowModel1Cache.guest.Add(guest);
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported type");
+            }
+            UpdateCache();
+        }
+        public void AddObjects<T>(IEnumerable<T> objs)
+        {
+            foreach (var obj in objs)
+            {
+                AddObject(obj);
+            }
+        }
+        public void RemoveObject<T>(T obj)
+        {
+            tvshowModel1Cache = CacheTvshowModelResave();
+            switch (obj)
+            {
+                case Employee employee:
+                    tvshowModel1Cache.employee.Remove(employee);
+                    break;
+                case Guest guest:
+                    tvshowModel1Cache.guest.Remove(guest);
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported type");
+            }
+            UpdateCache();
+        }
+        public void RemoveObjects<T>(IEnumerable<T> objs)
+        {
+            foreach (var obj in objs)
+            {
+                RemoveObject(obj);
+            }
+        }
+        private void UpdateCache()
+        {
+            SetCache(tvshowModel1Cache, TimeSpan.FromHours(5));
+        }
+        private void SetCache(TvshowModel model, TimeSpan expiration)
+        {
+            cache.Set("TvshowModel1Cache", model, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = expiration
+            });
+        }
+        public void RenewTvCache()
+        {
+            cache.Remove($"TvshowModel1Cache");
         }
     }
 }

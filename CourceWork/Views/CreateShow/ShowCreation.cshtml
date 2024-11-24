@@ -1,4 +1,5 @@
 ﻿@using CourceWork.Data
+@using CourceWork.ViewModels;
 @model CourceWork.ViewModels.TvshowModel
 @{
     ViewData["Title"] = "Создание передачи";
@@ -39,7 +40,7 @@
         <label asp-for="GenreId">Жанр</label>
         <select asp-for="GenreId" id="GenreId" name="GenreId" class="form-select" required>
             <option value="">Выберите жанр</option>
-            @foreach (var genre in StaticData.allGenresModel.genres)
+            @foreach (var genre in TvshowModel.allGenresModel.genres)
             {
                 <option value="@genre.GenreId">
                     @genre.Name
@@ -83,7 +84,7 @@
         <label asp-for="employee">Добавить сотрудника</label>
         <select asp-for="SelectedEmployeeId" id="SelectedEmployeeId" name="SelectedEmployeeId" class="form-select">
             <option value="">Выберите сотрудника</option>
-            @foreach (var employee in StaticData.allEmployeesModel.employee)
+            @foreach (var employee in TvshowModel.allEmployeesModel.employee)
             {
                 <option value="@employee.EmployeeId">@employee.FullName - @employee.Position</option>
             }
@@ -125,7 +126,7 @@
         <label asp-for="guest">Добавить гостя</label>
         <select asp-for="SelectedGuestId" id="SelectedGuestId" name="SelectedGuestId" class="form-select">
             <option value="">Выберите гостя</option>
-            @foreach (var guest in StaticData.allGuestsModel.guests)
+            @foreach (var guest in TvshowModel.allGuestsModel.guests)
             {
                 <option value="@guest.GuestId">@guest.FullName</option>
             }

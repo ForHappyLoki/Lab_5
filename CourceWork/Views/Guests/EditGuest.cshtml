@@ -1,0 +1,18 @@
+﻿@model Guest
+@{
+    ViewBag.Title = "Редактирование";
+}
+
+<form asp-action="ApprovalEditing" method="post">
+    <input type="hidden" asp-for="GuestId" />
+    <div class="form-group">
+        <label asp-for="FullName">Имя гостя</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+    <br />
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>

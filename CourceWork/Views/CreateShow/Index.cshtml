@@ -5,15 +5,17 @@
 }
 
 <div class="container">
-    <div class="search-bar text-center mb-4">
-        <form asp-action="Index" method="get">
-            <input type="text" name="searchTerm" id="searchInput" placeholder="@(string.IsNullOrEmpty((string)searchTerm) ? "Введите название шоу" : searchTerm)" class="form-control-1" />
-            <button id="searchButton" class="btn btn-primary">
+    <div class="search-bar text-center mb-4 d-flex justify-content-center">
+        <form asp-action="Index" method="get" class="d-inline-flex">
+            <input type="text" name="searchTerm" id="searchInput"
+                   value="@(string.IsNullOrEmpty((string)searchTerm) ? null : searchTerm)"
+                   class="form-control-1" placeholder="Введите название шоу" />
+            <button id="searchButton" class="btn btn-primary ms-2">
                 Поиск
             </button>
         </form>
-        <form asp-action="ShowCreation" method="post">
-            <button type="submit" id="addButton" class="btn btn-success ms-2">
+        <form asp-action="ShowCreation" method="post" class="d-inline-flex ms-2">
+            <button type="submit" id="addButton" class="btn btn-success">
                 Создать
             </button>
         </form>

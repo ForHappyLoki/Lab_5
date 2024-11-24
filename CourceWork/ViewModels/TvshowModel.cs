@@ -15,5 +15,9 @@ namespace CourceWork.ViewModels
         public List<Guest> guest { get; set; } = new List<Guest>();
         public int? SelectedEmployeeId { get; set; }
         public int? SelectedGuestId { get; set; }
+
+        public static AllEmployeesModel allEmployeesModel;
+        public static AllGenresModel allGenresModel;
+        public static AllGuestsModel allGuestsModel;
     }
 }

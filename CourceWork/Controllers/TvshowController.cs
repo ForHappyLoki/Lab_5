@@ -6,12 +6,12 @@ namespace CourceWork.Controllers
 {
     public class TvshowController : Controller
     {
-        private DatabaseContext _db;
-        private TvshowServices _tvshowServices;
-        public TvshowController()
+        private readonly DatabaseContext _db;
+        private readonly TvshowServices _tvshowServices;
+        public TvshowController(DatabaseContext databaseContext, TvshowServices tvshowServices)
         {
-            _db = StaticData.StaticDB;
-            _tvshowServices = StaticData.TvshowServices;
+            _db = databaseContext;
+            _tvshowServices = tvshowServices;
         }
         [HttpGet]
         public async Task<IActionResult> Index(int tvshowId)

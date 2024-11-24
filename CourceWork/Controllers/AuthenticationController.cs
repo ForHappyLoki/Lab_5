@@ -13,13 +13,9 @@ namespace CourceWork.Controllers
     public class AuthenticationController : Controller
     {
         private DatabaseContext _db;
-        //public AuthenticationController(DatabaseContext context)
-        //{
-        //    _db = context;
-        //}
-        public AuthenticationController()
+        public AuthenticationController(DatabaseContext context)
         {
-            _db = StaticData.StaticDB;
+            _db = context;
         }
         public IActionResult Index()
         {
