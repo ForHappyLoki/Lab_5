@@ -9,7 +9,24 @@
             <h2>Выйти из аккаунта?</h2>
             <form method="post" asp-action="LogoutAction" asp-controller="Authentication" asp-anti-forgery="true">
                 <button type="submit">Выйти</button>
+                <br />
+                <button type="button" onclick="history.back()" class="cancel-button">Отмена</button>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+    .cancel-button {
+        background-color: gray !important;
+        color: white !important;
+        border: none; 
+        cursor: pointer; 
+        border-radius: 5px; 
+        margin-top: 10px;
+    }
+
+    .cancel-button:hover {
+        background-color: darkgray !important;
+    }
+</style>

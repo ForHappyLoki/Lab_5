@@ -73,7 +73,7 @@ namespace CourceWork.Services
         public async Task<IEnumerable<Employee>> GetUser(string name)
         {
             // Попытка получить сотрудников по префиксу из кэша
-            if (!cache.TryGetValue($"fullName_{name}", out IEnumerable<Employee> users))
+            if (cache.TryGetValue($"fullName_{name}", out IEnumerable<Employee> users))
             {
                 return SortUsers(users);
             }
@@ -136,16 +136,17 @@ namespace CourceWork.Services
             if (employee != null)
             {
                 var tvShowEmployees = db.TvshowEmployees.Where(te => te.EmployeeId == employeeId);
+                // Удаляем из кеша, используя тот же ключ
                 if (tvShowEmployees.Count() > 0)
                 {
                     db.TvshowEmployees.RemoveRange(tvShowEmployees); // Удаляем все найденные записи
                 }
+                cache.Remove($"fullName_{employee.FullName}");
+                cache.Remove($"user_{employeeId}");
                 // Удаляем сотрудника из базы данных
                 db.Employees.Remove(employee);
                 await db.SaveChangesAsync(); // Сохраняем изменения
 
-                // Удаляем из кеша, используя тот же ключ
-                cache.Remove($"user_{employee.EmployeeId}"); 
             }
         }
     }

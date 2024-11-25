@@ -25,7 +25,14 @@ namespace CourceWork.Controllers
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
+                TempData["SearchTerm"] = searchTerm;
+                ViewData["SearchTerm"] = searchTerm;
                 model = model.Where(m => m.FullName.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            }
+            else
+            {
+                TempData.Remove("SearchTerm");
+                ViewData.Remove("SearchTerm");
             }
 
             return View(model);
@@ -59,7 +66,8 @@ namespace CourceWork.Controllers
         public async Task<IActionResult> Delete(int guestId)
         {
             await _guestsService.Delete(guestId);
-            return RedirectToAction("Index");
+            var search = TempData["SearchTerm"] as string ?? "";
+            return RedirectToAction("Index", new { searchTerm = search });
         }
     }   
 }

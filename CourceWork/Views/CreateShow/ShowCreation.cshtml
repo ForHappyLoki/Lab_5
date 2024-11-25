@@ -23,14 +23,14 @@
 
     <!-- Длительность -->
     <div class="form-group">
-        <label asp-for="tvshow.Duration">Длительность</label>
+        <label asp-for="tvshow.Duration">Длительность (В минутах)</label>
         <input asp-for="tvshow.Duration" class="form-control" />
         <span asp-validation-for="tvshow.Duration" class="text-danger"></span>
     </div>
 
     <!-- Рейтинг -->
     <div class="form-group">
-        <label asp-for="tvshow.Rating">Рейтинг</label>
+        <label asp-for="tvshow.Rating">Рейтинг (От 0 до 10)</label>
         <input asp-for="tvshow.Rating" class="form-control" type="number" min="0" max="10" step="0.01" required />
         <span asp-validation-for="tvshow.Rating" class="text-danger"></span>
     </div>

@@ -14,7 +14,7 @@ namespace CourceWork.Services
 {
     public class ScheduleService
     {
-        private CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+        private CultureInfo cultureInfo;
         private Calendar calendar;
         private DatabaseContext db;
         public IMemoryCache cache;
@@ -22,6 +22,7 @@ namespace CourceWork.Services
         {
             db = context;
             cache = memoryCache;
+            cultureInfo = new CultureInfo("ru-RU");
             calendar = cultureInfo.Calendar;
         }
         public async Task<ScheduleModel> ChooseWeek(DateOnly date)

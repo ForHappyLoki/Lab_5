@@ -22,9 +22,22 @@ namespace CourceWork.Controllers
             _tvshowServices = tvshowServices;
 
         }
+        [HttpGet]
         public async Task<IActionResult> Index(string searchTerm)
         {
             List<TvshowModel> tvshowModel;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                TempData["SearchTerm"] = searchTerm;
+                ViewData["SearchTerm"] = searchTerm;
+            }
+            else
+            {
+                TempData.Remove("SearchTerm");
+                ViewData.Remove("SearchTerm");
+            }
+
             if (string.IsNullOrEmpty(searchTerm))
             {
                 tvshowModel = await _tvshowServices.GetTvshowModels();
@@ -33,7 +46,7 @@ namespace CourceWork.Controllers
             {
                 tvshowModel = await _tvshowServices.GetTvshowModels(searchTerm);
             }
-            ViewData["SearchTerm"] = searchTerm;
+
             return View(tvshowModel);
         }
         [HttpPost]
@@ -119,6 +132,8 @@ namespace CourceWork.Controllers
                         TempData.Remove("modelId");
                     }
                     await _tvshowServices.SaveShow(model, showId);
+                    TempData["SearchTerm"] = model.tvshow.Title;
+                    ViewData["SearchTerm"] = model.tvshow.Title;
                     return RedirectToAction("Index", new { searchTerm = model.tvshow.Title });
             }
             TvshowModel.allEmployeesModel = await _tvshowServices.GetAllEmployeesModel();
@@ -135,7 +150,8 @@ namespace CourceWork.Controllers
         public async Task<IActionResult> ShowDelete(int showId)
         {
             await _tvshowServices.DeleteShow(showId);
-            return RedirectToAction("Index");
+            var search = TempData["SearchTerm"] as string ?? "";
+            return RedirectToAction("Index", new { searchTerm = search });
         }
     }
 }

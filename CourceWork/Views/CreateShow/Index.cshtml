@@ -1,14 +1,15 @@
-﻿@model List<CourceWork.ViewModels.TvshowModel>
+﻿
+@model List<CourceWork.ViewModels.TvshowModel>
 @{
-    ViewBag.Title = "Телепередачи";
-    var searchTerm = ViewData["SearchTerm"];
+    ViewBag.Title = "Телепередачи"; 
+    var searchTerm = ViewData["SearchTerm"] as string ?? "";
 }
 
 <div class="container">
     <div class="search-bar text-center mb-4 d-flex justify-content-center">
         <form asp-action="Index" method="get" class="d-inline-flex">
             <input type="text" name="searchTerm" id="searchInput"
-                   value="@(string.IsNullOrEmpty((string)searchTerm) ? null : searchTerm)"
+                   value="@searchTerm"
                    class="form-control-1" placeholder="Введите название шоу" />
             <button id="searchButton" class="btn btn-primary ms-2">
                 Поиск

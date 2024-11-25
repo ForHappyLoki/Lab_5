@@ -1,12 +1,15 @@
 ﻿@model IEnumerable<Employee>
 @{
     ViewBag.Title = "Сотрудники";
+    var searchTerm = ViewData["SearchTerm"] as string ?? "";
 }
 
 <div class="container">
     <div class="search-bar text-center mb-4">
         <form asp-action="Index" method="get">
-            <input type="text" name="searchTerm" id="searchInput" placeholder="Поиск сотрудника" class="form-control-1" />
+            <input type="text" name="searchTerm" id="searchInput"
+                   value="@searchTerm"
+                   class="form-control-1" placeholder="Введите имя сотрудника" />
             <button id="searchButton" class="btn btn-primary">
                 Поиск
             </button>

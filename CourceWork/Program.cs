@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,11 @@ builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<TvshowServices>();
 builder.Services.AddScoped<GuestsService>();
 builder.Services.AddScoped<UserService>();
+
+// --- Культура приложения ---
+var cultureInfo = new CultureInfo("ru-RU");
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 
 // --- Регистрация кэша ---
 builder.Services.AddMemoryCache();
