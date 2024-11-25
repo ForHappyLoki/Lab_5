@@ -4,6 +4,7 @@ using CourceWork.Services;
 using CourceWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Xunit.Abstractions;
 
 namespace CourceWork.Controllers
 {
@@ -54,6 +55,11 @@ namespace CourceWork.Controllers
             TempData.Remove("guestId");
             await _guestsService.Editing(guest);
             return RedirectToAction("Index", new { searchTerm = guest.FullName });
+        }
+        public async Task<IActionResult> Delete(int guestId)
+        {
+            await _guestsService.Delete(guestId);
+            return RedirectToAction("Index");
         }
     }   
 }

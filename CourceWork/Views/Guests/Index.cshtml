@@ -40,7 +40,7 @@
 
                             <form asp-action="Delete" method="post" style="display:inline;">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="employeeId" value="@guest.GuestId" />
+                                <input type="hidden" name="guestId" value="@guest.GuestId" />
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     Удалить
                                 </button>
