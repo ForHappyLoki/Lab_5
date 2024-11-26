@@ -87,8 +87,12 @@ namespace CourceWork.Services
                 }
                 if (scheduleModel != null)
                 {
-                    cache.Set($"{date.Year}_{dayKey}", scheduleModel,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                    try
+                    {
+                        cache.Set($"{date.Year}_{dayKey}", scheduleModel,
+                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex.ToString()); }
                 }
             }
             scheduleModel.findDate = new DateOnly(date.Year, date.Month, date.Day);
@@ -116,8 +120,12 @@ namespace CourceWork.Services
                 }
                 if (schedule != null)
                 {
-                    cache.Set($"schedule_{date.ToString()}", schedule,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                    try
+                    {
+                        cache.Set($"schedule_{date.ToString()}", schedule,
+                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex.ToString()); }
                 }
             }
 
@@ -152,8 +160,12 @@ namespace CourceWork.Services
                     tvshowsList = tvshowsList.OrderBy(tvshow => tvshow.Title).ToList();
                     if (tvshowsList != null)
                     {
-                        cache.Set($"tvshowsList", tvshowsList,
-                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                        try
+                        {
+                            cache.Set($"tvshowsList", tvshowsList,
+                                new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                        }
+                        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
                     }
                 }
                 dayModel = new DayModel()
@@ -168,8 +180,12 @@ namespace CourceWork.Services
                 };
                 if (dayModel != null)
                 {
-                    cache.Set($"dayModel_{date.Year}_{date.Month}_{date.Day}", dayModel,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                    try
+                    {
+                        cache.Set($"dayModel_{date.Year}_{date.Month}_{date.Day}", dayModel,
+                            new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex.ToString()); }
                 }
             }
             return dayModel;

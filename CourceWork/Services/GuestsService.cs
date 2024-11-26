@@ -68,9 +68,14 @@ namespace CourceWork.Services
             var guestTvshow = db.TvshowGuests.Where(t => t.GuestId == guestId).ToList();
             db.TvshowGuests.RemoveRange(guestTvshow);
             var guest = await db.Guests.FirstOrDefaultAsync(g => g.GuestId == guestId);
-            db.Guests.Remove(guest);
-            await db.SaveChangesAsync();
-            cache.Remove($"Guests");
+            try
+            {
+                db.Guests.Remove(guest);
+                await db.SaveChangesAsync();
+                cache.Remove($"Guests");
+            }
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+
         }
     }
 }
