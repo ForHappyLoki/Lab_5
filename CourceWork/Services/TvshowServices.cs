@@ -57,7 +57,7 @@ namespace CourceWork.Services
                         tvshowEmployee = tvshowEmployee.ToList(),
                         employee = filteredEmployees,
                         tvshowGuest = tvshowGuest.ToList(),
-                        guest = filteredGuest.ToList()
+                        guest = filteredGuest.ToList(),
                     };
                     tvshowModels.Add(tvshowModel);
                 }
@@ -82,7 +82,15 @@ namespace CourceWork.Services
         public async Task<TvshowModel> GetTvshowModels(int showId)
         {
             List<TvshowModel> tvshowModels = await GetTvshowModels();
-            return tvshowModels.FirstOrDefault(t => t.tvshow.ShowId == showId);
+            var result = tvshowModels.FirstOrDefault(t => t.tvshow.ShowId == showId);
+            var filteredSchedules = await (from schedule in db.Schedules
+                                            join scheduleTvshow in db.ScheduleTvshows on schedule.ScheduleId equals scheduleTvshow.ScheduleId
+                                            where scheduleTvshow.ShowId == result.tvshow.ShowId
+                                            select schedule)
+                                            .Distinct() // Убираем дубликаты, если передача транслировалась несколько раз в один день
+                                            .ToListAsync();
+            result.schedules = filteredSchedules;
+            return result;
         }
         public async Task<AllEmployeesModel> GetAllEmployeesModel()
         {

@@ -22,22 +22,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Расписание</a>
                         </li>
-                        <li class="nav-item">
+@*                      <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Политика приватности</a>
+                        </li> *@
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Сотрудники</a>
                         </li>
-                        @if (User.IsInRole("admin"))
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Guests" asp-action="Index">Гости</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Телепередачи</a>
+                        </li>
+                        @if (!User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="UserManagement" asp-action="Index">Сотрудники</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CitizenAppeal" asp-action="Index">Обращение</a>
                             </li>
                         }
-                        @if (User.IsInRole("admin") || User.IsInRole("manager"))
+                        else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Guests" asp-action="Index">Гости</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CreateShow" asp-action="Index">Телепередачи</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CitizenAppeal" asp-action="AdminIndex">Обращения</a>
                             </li>
                         }
                         @if (!User.Identity.IsAuthenticated)

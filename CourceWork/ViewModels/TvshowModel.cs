@@ -15,9 +15,19 @@ namespace CourceWork.ViewModels
         public List<Guest> guest { get; set; } = new List<Guest>();
         public int? SelectedEmployeeId { get; set; }
         public int? SelectedGuestId { get; set; }
+        public List<Schedule> schedules { get; set; } = new List<Schedule>();
 
         public static AllEmployeesModel allEmployeesModel;
         public static AllGenresModel allGenresModel;
         public static AllGuestsModel allGuestsModel;
+        public List<int> GetUniqueDate()
+        {
+            var uniqueYears = schedules
+                .Select(s => s.Date.Value.Year) // Извлекаем год из каждой даты
+                .Distinct() // Получаем уникальные года
+                .OrderBy(year => year) // Сортируем по возрастанию
+                .ToList(); // Преобразуем в список
+            return uniqueYears;
+        }
     }
 }

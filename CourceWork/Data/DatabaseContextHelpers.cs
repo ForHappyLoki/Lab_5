@@ -13,6 +13,9 @@ internal static class DatabaseContextHelpers
             entity.ToTable("CitizenAppeal");
 
             entity.Property(e => e.AppealId).HasColumnName("appeal_id");
+            entity.Property(e => e.DateAppeal)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.FullName)
                 .HasMaxLength(255)
                 .HasColumnName("full_name");

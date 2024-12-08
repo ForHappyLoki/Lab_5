@@ -32,6 +32,22 @@ namespace CourceWork.Services
             }
             return guests;
         }
+        public async Task<GuestsModel> GetGuest(int guestId)
+        {
+            var guests = await GetGuests();
+            var result = guests.FirstOrDefault(result => result.GuestId == guestId);
+            GuestsModel model = new GuestsModel
+            {
+                Guest = result,
+                Tvshow = await (from show in db.Tvshows
+                            join tvshowGuests in db.TvshowGuests on show.ShowId equals tvshowGuests.ShowId
+                            where tvshowGuests.GuestId == result.GuestId
+                            select show)
+                            .Distinct()
+                            .ToListAsync()
+            };
+            return model;
+        }
         public async Task Editing(Guest guest)
         {
             if (guest != null)

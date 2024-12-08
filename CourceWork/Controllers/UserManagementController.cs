@@ -10,7 +10,6 @@ using System.Web;
 
 namespace CourceWork.Controllers
 {
-    [Authorize(Roles = "admin")]
     public class UserManagementController : Controller
     {
         private readonly DatabaseContext _db;
@@ -21,7 +20,7 @@ namespace CourceWork.Controllers
             _userService = userService;
         }
         [HttpGet]
-        public async Task<ActionResult> Index(string searchTerm)
+        public async Task<ActionResult> Index(string searchTerm, string position)
         {
             ViewBag.ShowNotification = "true";
             IEnumerable<Employee> model;
@@ -38,21 +37,28 @@ namespace CourceWork.Controllers
                 TempData["SearchTerm"] = searchTerm;
                 ViewData["SearchTerm"] = searchTerm;
             }
+            if(!string.IsNullOrWhiteSpace(position))
+            {
+                ViewData["SelectedPosition"] = position;
+            }
             return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(int employeeId)
         {
             await _userService.Delete(employeeId);
             var search = TempData["SearchTerm"] as string ?? "";
             return RedirectToAction("Index", new { searchTerm = search });
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult> Editing(Employee model)
         {
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult> ValidationEditing(Employee model)
         {
@@ -65,11 +71,13 @@ namespace CourceWork.Controllers
             }
             return RedirectToAction("Editing", model);
         }
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Creation(Employee model)
         {
             Employee employee = new Employee();
             return View(employee);
         }
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> CreationEditing(Employee model)
         {
             if (ModelState.IsValid)

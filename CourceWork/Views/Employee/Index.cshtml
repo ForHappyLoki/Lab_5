@@ -1,0 +1,161 @@
+﻿@model CourceWork.ViewModels.EmployeeModel;
+@{
+    ViewData["Title"] = Model.employee.FullName;
+    var months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.Take(12).ToList();
+    var userRole = User.IsInRole("moder") || User.IsInRole("admin");
+}
+<body>
+    <div class="container-tv">
+        <h1>@Model.employee.FullName</h1>
+
+        <div>
+            <h3>Должность: <span class="highlight">@Model.employee.Position</span></h3>
+            <h3>Работает с: @Model.employee.HireDateString</h3>
+        </div>
+
+        @if (Model.tvshows.Count > 0)
+        {
+            <h2>Участвовал в следующих передачах:</h2>
+            <ul>
+                @foreach (var tvshow in Model.tvshows)
+                {
+                    <li>
+                        <a href="@Url.Action("Index", "Tvshow", new { tvshowId = tvshow.ShowId })">
+                            <span class="highlight">@tvshow.Title</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <h2>Сотрудник еще не участвовал в передачах</h2>
+        }
+
+        @if (userRole) 
+        {
+            <h4>Бухгалтерия. Тут можно посмотреть по годам и месяцам, в каких шоу участвовал сотрудник и сколько отработал времени за месяц</h4>
+            @if (Model.tvshows.Count > 0 )
+            {
+                foreach (var year in Model.GetUniqueDate())
+                {
+                    <h2 style="cursor: pointer;" onclick="toggleMonths('@year', this)">@year <span class="arrow">►</span></h2>
+                    <div class="months" style="display: none;" data-year="@year">
+                        <ul>
+                            @for (int i = 0; i < months.Count; i++)
+                            {
+                                <li>
+                                    @{
+                                        var shows = Model.GetEmployeeShow(year, i + 1); // Сохраняем результат в переменной
+                                    }
+                                    <h3 style="cursor: pointer;" onclick="toggleMonthDetails(this)">
+                                        @months[i] (@shows.Count) <span class="arrow">►</span>
+                                    </h3>
+                                    <div style="display: none;">
+
+                                        @if (shows.Count > 0)
+                                        {
+                                            foreach (var show in shows)
+                                            {
+                                                <div><pre>@show</pre></div>
+                                            }
+                                            <div>В этом месяце сотрудник отработал @Model.GetWorkTime(year, i+1) минут телеэкранного времени</div>
+                                        }
+                                        else
+                                        {
+                                            <h4>В этом месяце сотрудник не работал</h4>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+            else
+            {
+                <h4>Сотрудник еще не назначен на передачу, или его передачи не были в эфире</h4>
+            }
+        }
+    </div>
+
+    <script>
+        function toggleMonths(year, element) {
+            // Находим соответствующий div для месяцев
+            var monthsDiv = document.querySelector(`.months[data-year="${year}"]`);
+            if (monthsDiv) {
+                monthsDiv.style.display = monthsDiv.style.display === "none" ? "block" : "none";
+
+                // Изменяем стрелочку
+                var arrow = element.querySelector('.arrow');
+                arrow.textContent = monthsDiv.style.display === "block" ? "▼" : "►";
+            }
+        }
+
+        function toggleMonthDetails(element) {
+            var details = element.nextElementSibling;
+            details.style.display = details.style.display === "none" ? "block" : "none";
+
+            // Изменяем стрелочку
+            var arrow = element.querySelector('.arrow');
+            arrow.textContent = details.style.display === "block" ? "▼" : "►";
+        }
+    </script>
+</body>
+
+<style>
+
+    .container-tv {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+        color: #444;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.8em;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        color: #555;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+    }
+
+    h3 {
+        font-size: 1.3em;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        color: #555;
+    }
+
+    ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+
+    ul li {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .highlight {
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>

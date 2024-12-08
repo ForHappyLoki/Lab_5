@@ -1,0 +1,96 @@
+﻿@model List<CourceWork.ViewModels.CitizenAppealModel>;
+@{
+    ViewData["Title"] = "Обращения";
+}
+
+<div class="container">
+
+    <div id="employeeList">
+        @if (Model == null || !Model.Any())
+        {
+            <p>Нет обращений для отображения.</p>
+        }
+        else
+        {
+            <ul class="list-group">
+                <li class="list-group-item header">
+                    <div>
+                        <strong>Дата</strong>
+                    </div>
+                    <div>
+                        <strong>Имя</strong>
+                    </div>
+                    <div>
+                        <strong>Организация</strong>
+                    </div>
+                    <div>
+                        <strong>Текст обращения</strong>
+                    </div>
+                    <div>
+                        <strong>Действия</strong>
+                    </div>
+                </li>
+                @foreach (var appeal in Model)
+                {
+                    <li id="appeal-@appeal.CitizenAppeal.AppealId" class="list-group-item">
+                        <div>
+                            <strong>@appeal.CitizenAppeal.DateAppeal.ToString()</strong>
+                        </div>
+                        <div>
+                            <strong>@appeal.CitizenAppeal.FullName</strong>
+                        </div>
+                        <div>
+                            @if (appeal.CitizenAppeal.Organization != null)
+                            {
+                                <strong>@appeal.CitizenAppeal.Organization</strong>
+                            }
+                            else
+                            {
+                                <strong>Без организации</strong>
+                            }
+                        </div>
+                        <div class="appeal-purpose">
+                            @appeal.CitizenAppeal.Purpose
+                        </div>
+                        <div>
+                            <form asp-action="DeleteAppeal" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="appealId" value="@appeal.CitizenAppeal.AppealId" />
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+<style>
+    .list-group-item {
+        display: flex; /* Включаем Flexbox */
+        justify-content: space-between; /* Распределение пространства между элементами */
+        align-items: flex-start; /* Центрирование по вертикали */
+        padding: 10px; /* Отступы для элемента */
+        border: 1px solid #ddd; /* Граница для визуального разделения */
+        margin-bottom: 5px; /* Отступ между строками */
+    }
+
+    .list-group-item > div {
+        flex: 1; /* Каждому элементу выделяется равное пространство */
+        padding: 0 10px; /* Горизонтальные отступы для элементов */
+        box-sizing: border-box; /* Учет padding в ширине */
+        max-width: 200px; /* Максимальная ширина для каждого элемента */
+        overflow-wrap: break-word; /* Перенос длинного слова на следующую строку */
+        word-wrap: break-word; /* Для совместимости с более старыми браузерами */
+        hyphens: auto; /* Автоматический перенос слов с переносами */
+        white-space: normal; /* Нормальный перенос строк */
+    }
+
+    .header {
+        font-weight: bold; /* Жирный текст для заголовков */
+        background-color: #f8f9fa; /* Цвет фона для заголовков */
+        border-bottom: 2px solid #ddd; /* Граница для отделения заголовков */
+    }
+</style>    

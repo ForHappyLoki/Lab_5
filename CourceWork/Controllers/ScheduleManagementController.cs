@@ -31,7 +31,7 @@ namespace CourceWork.Controllers
         public async Task<IActionResult> EditShowToSchedule(List<ScheduleTvshow> scheduleTvshows, DateTime date)
         {
             await scheduleService.EditShowToSchedule(scheduleTvshows, date);
-            return RedirectToAction("Index", new { date });
+            return RedirectToAction("Index", "Home", new { date = DateOnly.FromDateTime(date) });
         }
         [HttpPost]
         public async Task<IActionResult> DeleteShowToSchedule(int scheduleTvshowId)

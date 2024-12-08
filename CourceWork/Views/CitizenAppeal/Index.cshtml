@@ -1,0 +1,41 @@
+﻿@using CourceWork.ViewModels;
+@model CitizenAppealModel;
+@{
+    ViewBag.Title = "Обращение";
+}
+
+<form asp-action="ApprovalAppeal" method="post">
+    <div class="form-group">
+        <label asp-for="CitizenAppeal.FullName">Ваше имя</label>
+        <small class="form-text text-muted">Максимум 40 символов</small>
+        <input asp-for="CitizenAppeal.FullName" class="form-control" required maxlength="40" />
+        <span asp-validation-for="CitizenAppeal.FullName" class="text-danger"></span>
+
+        <label asp-for="CitizenAppeal.Organization">Организация (Не обязательно)</label>
+        <small class="form-text text-muted">Максимум 60 символов</small>
+        <input asp-for="CitizenAppeal.Organization" class="form-control" maxlength="60" />
+        <span asp-validation-for="CitizenAppeal.Organization" class="text-danger"></span>
+
+        <label asp-for="ShowId">Шоу</label>
+        <select asp-for="ShowId" id="showId" name="showId" class="form-select" required>
+            <option value="">Выберите шоу</option>
+            @foreach (var tvshow in Model.AllShows.tvshows)
+            {
+                <option value="@tvshow.ShowId">
+                    @tvshow.Title
+                </option>
+            }
+        </select>
+        <span asp-validation-for="ShowId" class="text-danger"></span>
+
+        <label asp-for="CitizenAppeal.Purpose">Обращение (Оставьте свои контактные данные, чтобы мы смогли Вам ответить!)</label>
+        <small class="form-text text-muted">Максимум 1500 символов</small>
+        <textarea asp-for="CitizenAppeal.Purpose" class="form-control" rows="5" required maxlength="1500"></textarea>
+        <span asp-validation-for="CitizenAppeal.Purpose" class="text-danger"></span>
+    </div>
+    <br />
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Отправить</button>
+        <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>

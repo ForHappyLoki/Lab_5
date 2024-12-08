@@ -1,0 +1,87 @@
+﻿@model CourceWork.ViewModels.GuestsModel;
+@{
+    ViewData["Title"] = Model.Guest.FullName;
+    var months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.Take(12).ToList();
+}
+
+<body>
+    <div class="container-tv">
+        <h1>@Model.Guest.FullName</h1>
+
+        @if (Model.Tvshow.Count > 0)
+        {
+            <h2>Участвовал в следующих передачах:</h2>
+            <ul>
+                @foreach (var tvshow in Model.Tvshow)
+                {
+                    <li>
+                        <a href="@Url.Action("Index", "Tvshow", new { tvshowId = tvshow.ShowId })">
+                            <span class="highlight">@tvshow.Title</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <h2>Гость еще не участвовал в передачах</h2>
+        }
+    </div>
+</body>
+
+<style>
+
+    .container-tv {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+        color: #444;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.8em;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        color: #555;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+    }
+
+    h3 {
+        font-size: 1.3em;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        color: #555;
+    }
+
+    ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+
+    ul li {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .highlight {
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>

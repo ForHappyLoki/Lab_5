@@ -4,7 +4,7 @@
     ViewData["Title"] = "Телепередачи на неделю";
 }
 @{
-    var userRole = User.IsInRole("moder") || User.IsInRole("admin"); // Проверяем роль пользователя
+    var userRole = User.IsInRole("moder") || User.IsInRole("admin"); 
     DateOnly dateOnly = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
     TimeOnly timeOnly = new TimeOnly(DateTime.Now.Hour, DateTime.Now.Minute);
 }
@@ -68,7 +68,7 @@
                 }
             </tbody>
         </table>
-        @if (userRole) // Проверка роли пользователя
+        @if (userRole)
         {
             <form action="@Url.Action("Index", "ScheduleManagement")" method="post">
                 <input type="hidden" name="scheduleId" value="@Model.schedules[i]?.ScheduleId ?? 0" />

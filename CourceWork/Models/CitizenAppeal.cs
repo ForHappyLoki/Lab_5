@@ -15,5 +15,7 @@ public partial class CitizenAppeal
 
     public int? ShowId { get; set; }
 
+    public DateTime? DateAppeal { get; set; }
+
     public virtual Tvshow? Show { get; set; }
 }

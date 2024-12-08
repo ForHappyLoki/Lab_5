@@ -10,7 +10,6 @@ using System;
 
 namespace CourceWork.Controllers
 {
-    [Authorize(Roles = "admin,moder")]
     public class CreateShowController : Controller
     {
         private readonly DatabaseContext _db;
@@ -23,9 +22,13 @@ namespace CourceWork.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult> Index(string searchTerm)
+        public async Task<IActionResult> Index(string searchTerm, int genreId = 0)
         {
             List<TvshowModel> tvshowModel;
+
+            TvshowModel.allEmployeesModel = await _tvshowServices.GetAllEmployeesModel();
+            TvshowModel.allGenresModel = await _tvshowServices.GetAllGenresModel();
+            TvshowModel.allGuestsModel = await _tvshowServices.GetAllGuestsModel();
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -46,9 +49,16 @@ namespace CourceWork.Controllers
             {
                 tvshowModel = await _tvshowServices.GetTvshowModels(searchTerm);
             }
+            if(genreId > 0)
+            {
+                tvshowModel = tvshowModel.Where(tvshowModel => tvshowModel.tvshow.GenreId == genreId)
+                        .ToList();
+                ViewData["SelectedGenreId"] = genreId;
+            }
 
             return View(tvshowModel);
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> ShowCreation(TvshowModel model, string action = null, int modelId = 0)
         {
@@ -146,6 +156,7 @@ namespace CourceWork.Controllers
             }
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> ShowDelete(int showId)
         {

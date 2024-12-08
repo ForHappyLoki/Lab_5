@@ -2,20 +2,43 @@
 @{
     ViewBag.Title = "Сотрудники";
     var searchTerm = ViewData["SearchTerm"] as string ?? "";
+    var userRole = User.IsInRole("moder") || User.IsInRole("admin"); 
 }
 
 <div class="container">
-    <div class="search-bar text-center mb-4">
-        <form asp-action="Index" method="get">
+    <div class="search-bar text-center mb-4 d-flex justify-content-center">
+        <form asp-action="Index" method="get" class="d-inline-flex">
             <input type="text" name="searchTerm" id="searchInput"
                    value="@searchTerm"
                    class="form-control-1" placeholder="Введите имя сотрудника" />
+            <select class="form-control" name="position">
+                <option value="">Поиск по должности</option>
+                @foreach (var pos in Model)
+                {
+                    var selected = pos.Position == (string?)ViewBag.SelectedPosition ? true : false;
+                    if (selected)
+                    {
+                        <option value="@pos.Position" selected>
+                            @pos.Position
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@pos.Position">
+                            @pos.Position
+                        </option>
+                    }
+                }
+            </select>
             <button id="searchButton" class="btn btn-primary">
                 Поиск
             </button>
-            <button type="button" id="addButton" class="btn btn-success ms-2" onclick="location.href='@Url.Action("Creation", "UserManagement")';">
-                Создать
-            </button>
+            @if (userRole)
+            {
+                <button type="button" id="addButton" class="btn btn-success ms-2" onclick="location.href='@Url.Action("Creation", "UserManagement")';">
+                    Создать
+                </button>
+            }
         </form>
     </div>
 
@@ -27,33 +50,48 @@
         else
         {
             <ul class="list-group">
-                @foreach (var employee in Model)
+                @{
+                    var selectModel = Model;
+                    if(!string.IsNullOrWhiteSpace((string?)ViewBag.SelectedPosition))
+                    {
+                        selectModel = Model.Where(m => m.Position == (string?)ViewBag.SelectedPosition);
+                    }
+                }
+                @foreach (var employee in selectModel)
                 {
                     <li id="employee-@employee.EmployeeId" class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>@employee.FullName</strong> (Должность: @employee.Position, Логин: @employee.Login, Пароль: @employee.Password, Роль: @employee.Role)
+                        <div class="max-wigth">
+                            <strong>
+                                <a href="@Url.Action("Index", "Employee", new { employeeId = employee.EmployeeId })">
+                                    @employee.FullName
+                                </a>
+                            </strong> 
+                            (Должность: @employee.Position, Логин: @employee.Login, Пароль: @employee.Password, Роль: @employee.Role)
                         </div>
                         <div>
-                            <form asp-action="Editing" method="post" style="display:inline;">
-                                <input type="hidden" name="EmployeeId" value="@employee.EmployeeId" />
-                                <input type="hidden" name="FullName" value="@employee.FullName" />
-                                <input type="hidden" name="HireDate" value="@employee.HireDate" />
-                                <input type="hidden" name="Position" value="@employee.Position" />
-                                <input type="hidden" name="Login" value="@employee.Login" />
-                                <input type="hidden" name="Password" value="@employee.Password" />
-                                <input type="hidden" name="Role" value="@employee.Role" />
-                                <button class="btn btn-warning btn-sm">
-                                    Редактировать
-                                </button>
-                            </form>
+                            @if (userRole)
+                            {
+                                <form asp-action="Editing" method="post" style="display:inline;">
+                                    <input type="hidden" name="EmployeeId" value="@employee.EmployeeId" />
+                                    <input type="hidden" name="FullName" value="@employee.FullName" />
+                                    <input type="hidden" name="HireDate" value="@employee.HireDate" />
+                                    <input type="hidden" name="Position" value="@employee.Position" />
+                                    <input type="hidden" name="Login" value="@employee.Login" />
+                                    <input type="hidden" name="Password" value="@employee.Password" />
+                                    <input type="hidden" name="Role" value="@employee.Role" />
+                                    <button class="btn btn-warning btn-sm">
+                                        Редактировать
+                                    </button>
+                                </form>
 
-                            <form asp-action="Delete" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="employeeId" value="@employee.EmployeeId" />
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Удалить
-                                </button>
-                            </form>
+                                <form asp-action="Delete" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="employeeId" value="@employee.EmployeeId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Удалить
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </li>
                 }
@@ -102,3 +140,8 @@
         }
     }
 </script>
+<style>
+    .max-wigth {
+        max-width: 80%;
+    }
+</style>

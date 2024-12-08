@@ -1,25 +1,51 @@
-﻿
+﻿@using CourceWork.ViewModels
+
 @model List<CourceWork.ViewModels.TvshowModel>
 @{
     ViewBag.Title = "Телепередачи"; 
     var searchTerm = ViewData["SearchTerm"] as string ?? "";
+    var userRole = User.IsInRole("moder") || User.IsInRole("admin"); 
 }
 
 <div class="container">
     <div class="search-bar text-center mb-4 d-flex justify-content-center">
         <form asp-action="Index" method="get" class="d-inline-flex">
             <input type="text" name="searchTerm" id="searchInput"
-                   value="@searchTerm"
+                   value="@ViewData["SearchTerm"]"
                    class="form-control-1" placeholder="Введите название шоу" />
+    
+            <select class="form-control" name="genreId">
+                <option value="0">Поиск по жанру</option>
+                @foreach (var genre in TvshowModel.allGenresModel.genres)
+                {
+                    var selected = genre.GenreId == (int?)ViewBag.SelectedGenreId ? true : false;
+                    if (selected)
+                    {
+                        <option value="@genre.GenreId" selected>
+                            @genre.Name
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@genre.GenreId">
+                            @genre.Name
+                        </option>
+                    }
+                }
+            </select>
+    
             <button id="searchButton" class="btn btn-primary ms-2">
                 Поиск
             </button>
         </form>
-        <form asp-action="ShowCreation" method="post" class="d-inline-flex ms-2">
-            <button type="submit" id="addButton" class="btn btn-success">
-                Создать
-            </button>
-        </form>
+        @if (userRole)
+        {
+            <form asp-action="ShowCreation" method="post" class="d-inline-flex ms-2">
+                <button type="submit" id="addButton" class="btn btn-success">
+                    Создать
+                </button>
+            </form>
+        }
     </div>
 
     <div id="employeeList">
@@ -34,7 +60,12 @@
                 {
                     <li id="employee-@tvshow.tvshow.ShowId" class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="max-wigth">
-                            <strong>@tvshow.tvshow.Title </strong> (Жанр: @tvshow.genre.Name,
+                            <strong>
+                                <a href="@Url.Action("Index", "Tvshow", new { tvshowId = tvshow.tvshow.ShowId })">
+                                    @tvshow.tvshow.Title 
+                                </a>
+                            </strong> 
+                            (Жанр: @tvshow.genre.Name,
                             Длительность: @tvshow.tvshow.Duration,
                             Рейтинг: @tvshow.tvshow.Rating,
                             Сотрудники:
@@ -63,22 +94,26 @@
                             }
                             )
                         </div>
-                        <div>
-                            <form asp-action="ShowCreation" method="post" style="display:inline;">
-                                <input type="hidden" name="modelId" value="@tvshow.tvshow.ShowId" />
-                                <button type="submit" class="btn btn-warning btn-sm">
-                                    Редактировать
-                                </button>
-                            </form>
-                            <form asp-action="ShowDelete" method="post" style="display:inline;" 
-                            onsubmit="return confirm('Вы действительно хотите удалить это шоу? Оно будет удалено из расписания, 
+
+                        @if (userRole)
+                        {
+                            <div>
+                                <form asp-action="ShowCreation" method="post" style="display:inline;">
+                                    <input type="hidden" name="modelId" value="@tvshow.tvshow.ShowId" />
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        Редактировать
+                                    </button>
+                                </form>
+                                <form asp-action="ShowDelete" method="post" style="display:inline;" 
+                                onsubmit="return confirm('Вы действительно хотите удалить это шоу? Оно будет удалено из расписания, 
                             все назначенные сотрудники и гости потеряют с ним связь');">
-                                <input type="hidden" name="showId" value="@tvshow.tvshow.ShowId" />
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Удалить
-                                </button>
-                            </form>
-                        </div>
+                                    <input type="hidden" name="showId" value="@tvshow.tvshow.ShowId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        }
                     </li>
                 }
             </ul>

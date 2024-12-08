@@ -15,6 +15,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseSqlServer(connectionString));
 
 // --- Регистрация сервисов ---
+builder.Services.AddScoped<CitizenAppealService>();
+builder.Services.AddScoped<EmployeeServices>();
 builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<TvshowServices>();
 builder.Services.AddScoped<GuestsService>();

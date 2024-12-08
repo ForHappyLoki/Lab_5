@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Список гостей";
     var searchTerm = ViewData["SearchTerm"] as string ?? "";
+    var userRole = User.IsInRole("moder") || User.IsInRole("admin");
 }
 
 <div class="container">
@@ -13,9 +14,12 @@
             <button id="searchButton" class="btn btn-primary">
                 Поиск
             </button>
-            <button type="button" id="addButton" class="btn btn-success ms-2" onclick="location.href='@Url.Action("EditGuest", "Guests")';">
-                Создать
-            </button>
+            @if (userRole)
+            {
+                <button type="button" id="addButton" class="btn btn-success ms-2" onclick="location.href='@Url.Action("EditGuest", "Guests")';">
+                    Создать
+                </button>
+            }
         </form>
     </div>
 
@@ -34,20 +38,23 @@
                             <strong>@guest.FullName</strong>
                         </div>
                         <div>
-                            <form asp-action="EditGuest" method="get" style="display:inline;">
-                                <input type="hidden" name="guestId" value="@guest.GuestId" />
-                                <button class="btn btn-warning btn-sm">
-                                    Редактировать
-                                </button>
-                            </form>
+                            @if (userRole)
+                            {
+                                <form asp-action="EditGuest" method="get" style="display:inline;">
+                                    <input type="hidden" name="guestId" value="@guest.GuestId" />
+                                    <button class="btn btn-warning btn-sm">
+                                        Редактировать
+                                    </button>
+                                </form>
 
-                            <form asp-action="Delete" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="guestId" value="@guest.GuestId" />
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Удалить
-                                </button>
-                            </form>
+                                <form asp-action="Delete" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="guestId" value="@guest.GuestId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Удалить
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </li>
                 }

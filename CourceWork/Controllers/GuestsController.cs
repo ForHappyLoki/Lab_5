@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace CourceWork.Controllers
 {
-    [Authorize(Roles = "admin,moder")]
     public class GuestsController : Controller
     {
         private readonly DatabaseContext _db;
@@ -37,6 +36,7 @@ namespace CourceWork.Controllers
 
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> EditGuest(int guestId)
         {
@@ -53,6 +53,7 @@ namespace CourceWork.Controllers
             }
             return View(guest);
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> ApprovalEditing(Guest guest)
         {
             if (TempData["guestId"] != null && int.TryParse(TempData["guestId"].ToString(), out int guestId))
@@ -63,6 +64,7 @@ namespace CourceWork.Controllers
             await _guestsService.Editing(guest);
             return RedirectToAction("Index", new { searchTerm = guest.FullName });
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int guestId)
         {
             await _guestsService.Delete(guestId);

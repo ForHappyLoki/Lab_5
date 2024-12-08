@@ -1,6 +1,7 @@
 ﻿@model CourceWork.ViewModels.TvshowModel;
 @{
     ViewData["Title"] = Model.tvshow.Title;
+    var months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames.Take(12).ToList();
 }
 
 <body>
@@ -19,7 +20,10 @@
             @foreach (var employee in Model.employee)
             {
                 <li>
-                    <span class="highlight">@employee.FullName</span> (@employee.Position)
+                    <a href="@Url.Action("Index", "Employee", new { employeeId = employee.EmployeeId })">
+                        <span class="highlight">@employee.FullName</span>
+                    </a>
+                    (@employee.Position)
                 </li>
             }
         </ul>
@@ -29,22 +33,91 @@
             @foreach (var guest in Model.guest)
             {
                 <li>
-                    <span class="highlight">@guest.FullName</span>
+                    <a href="@Url.Action("Index", "GuestsInfo", new { guestId = guest.GuestId })">
+                        <span class="highlight">@guest.FullName</span>
+                    </a>
                 </li>
             }
         </ul>
+
+        <h4>Тут можно посмотреть по годам и месяцам, в какие даты шло шоу</h4>
+        @if (Model.schedules.Count > 0)
+        {
+            foreach (var year in Model.GetUniqueDate())
+            {
+                <h2 style="cursor: pointer;" onclick="toggleMonths('@year', this)">@year <span class="arrow">►</span></h2>
+                <div class="months" style="display: none;" data-year="@year">
+                    <ul>
+                        @for (int i = 0; i < months.Count; i++)
+                        {
+                            <li>
+                                @{
+                                    int counter = 0;
+                                    List<string> strings = new List<string>();
+                                }
+                                @foreach (var schedule in Model.schedules)
+                                {
+                                    if (schedule.Date.Value.Year == year && schedule.Date.Value.Month == i + 1)
+                                    {
+                                        {
+                                            strings.Add(schedule.Date.ToString());
+                                            counter++;
+                                        }
+                                    }
+                                }
+                                <h3 style="cursor: pointer;" onclick="toggleMonthDetails(this)">
+                                    @months[i] (@counter) <span class="arrow">►</span>
+                                </h3>
+                                <div style="display: none;">
+                                    @foreach (var dateString in strings)
+                                    {
+                                        <div>@dateString</div>
+                                    }
+                                    @if (counter > 0)
+                                    {
+                                        <div>В этом месяце шоу транслировалось @counter раз</div>
+                                    }
+                                    else
+                                    {
+                                        <h4>В этом месяце шоу не транслировалось</h4>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        }
+        else
+        {
+            <h4>Шоу еще не выходило в эфир</h4>
+        }
     </div>
+    <script>
+        function toggleMonths(year, element) {
+            // Находим соответствующий div для месяцев
+            var monthsDiv = document.querySelector(`.months[data-year="${year}"]`);
+            if (monthsDiv) {
+                monthsDiv.style.display = monthsDiv.style.display === "none" ? "block" : "none";
+
+                // Изменяем стрелочку
+                var arrow = element.querySelector('.arrow');
+                arrow.textContent = monthsDiv.style.display === "block" ? "▼" : "►";
+            }
+        }
+
+        function toggleMonthDetails(element) {
+            var details = element.nextElementSibling;
+            details.style.display = details.style.display === "none" ? "block" : "none";
+
+            // Изменяем стрелочку
+            var arrow = element.querySelector('.arrow');
+            arrow.textContent = details.style.display === "block" ? "▼" : "►";
+        }
+    </script>
 </body>
 
 <style>
-/*     body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-        background-color: #f9f9f9;
-        color: #333;
-    } */
 
     .container-tv {
         max-width: 800px;
